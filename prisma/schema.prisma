@@ -1,0 +1,37 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql" // Change to "mysql", "sqlite", etc. as needed
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String       @unique
+  password    String
+  phone       String       @unique
+  state       String
+  city        String
+  pincode     String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  preBookings PreBooking[] // A user can have multiple pre-bookings
+}
+
+model PreBooking {
+  id           Int      @id @default(autoincrement())
+  manufacturer String
+  model        String
+  battery      String
+  userId       Int      // Foreign key field to link with the User model
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
