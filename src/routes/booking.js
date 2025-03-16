@@ -4,31 +4,39 @@ import passport from "passport";
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
-  try {
-    const { manufacturer, model, battery, userId } = req.body;
+router.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const user = req.user;
+      if (!user) {
+        return res.status(401).json({ error: "User not logged in" });
+      }
 
-    if (!manufacturer || !model || !battery || !userId) {
-      return res.status(400).json({ error: "Missing required fields" });
+      const { manufacturer, model, battery } = req.body;
+      if (!manufacturer || !model || !battery) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const preBooking = await prisma.preBooking.create({
+        data: {
+          manufacturer,
+          model,
+          battery,
+          userId: user.id, // Assign the booking to the authenticated user
+        },
+      });
+
+      res
+        .status(201)
+        .json({ message: "Pre-booking created successfully", preBooking });
+    } catch (error) {
+      console.error("Error creating pre-booking:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    const preBooking = await prisma.preBooking.create({
-      data: {
-        manufacturer,
-        model,
-        battery,
-        userId, // This links the booking to an existing user
-      },
-    });
-
-    res
-      .status(201)
-      .json({ message: "Pre-booking created successfully", preBooking });
-  } catch (error) {
-    console.error("Error creating pre-booking:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+  },
+);
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
