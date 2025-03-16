@@ -4,8 +4,6 @@ import passport from "passport";
 
 const router = express.Router();
 
-// POST /api/booking
-// Endpoint to create a new pre-booking
 router.post("/", async (req, res) => {
   try {
     const { manufacturer, model, battery, userId } = req.body;
@@ -36,13 +34,11 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
-      // The user object is added to the request by passport's JWT strategy
       const user = req.user;
 
-      // Retrieve pre-bookings associated with the authenticated user's id
       const bookings = await prisma.preBooking.findMany({
         where: { userId: user.id },
-        include: { user: true }, // Optionally include user details
+        include: { user: true },
       });
 
       res.status(200).json({ bookings });

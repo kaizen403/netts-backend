@@ -7,7 +7,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// ----- Local Login Strategy -----
 passport.use(
   "local-login",
   new LocalStrategy(
@@ -33,26 +32,22 @@ passport.use(
   ),
 );
 
-// ----- Local Register Strategy -----
-// This strategy handles registration using extra fields from req.body.
 passport.use(
   "local-register",
   new LocalStrategy(
     {
       usernameField: "email",
-      passReqToCallback: true, // Enables access to req.body for additional fields.
+      passReqToCallback: true,
     },
     async (req, email, password, done) => {
       try {
         const { firstName, lastName, phone, state, city, pincode } = req.body;
 
-        // Check if a user already exists with the given email.
         let user = await prisma.user.findUnique({ where: { email } });
         if (user) {
           return done(null, false, { message: "Email already registered" });
         }
 
-        // Optionally, check if a user exists with the same phone number.
         user = await prisma.user.findUnique({ where: { phone } });
         if (user) {
           return done(null, false, {
@@ -60,10 +55,8 @@ passport.use(
           });
         }
 
-        // Hash the password.
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create a new user.
         const newUser = await prisma.user.create({
           data: {
             firstName,
@@ -85,7 +78,6 @@ passport.use(
   ),
 );
 
-// ----- JWT Strategy -----
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET,
@@ -105,7 +97,6 @@ passport.use(
   }),
 );
 
-// ----- Session Serialization/Deserialization -----
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });

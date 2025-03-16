@@ -1,7 +1,6 @@
-// prisma/schema.prisma
 
 datasource db {
-  provider = "postgresql" // Change to "mysql", "sqlite", etc. as needed
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -21,7 +20,7 @@ model User {
   pincode     String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  preBookings PreBooking[] // A user can have multiple pre-bookings
+  preBookings PreBooking[] 
 }
 
 model PreBooking {
@@ -29,7 +28,7 @@ model PreBooking {
   manufacturer String
   model        String
   battery      String
-  userId       Int      // Foreign key field to link with the User model
+  userId       Int      
   user         User     @relation(fields: [userId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

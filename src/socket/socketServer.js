@@ -22,7 +22,6 @@ export function initSocketServer(server) {
   return ioInstance;
 }
 
-// Function to send battery data to all connected clients
 export function broadcastBatteryData(data) {
   if (ioInstance) {
     ioInstance.emit("battery-data", data);

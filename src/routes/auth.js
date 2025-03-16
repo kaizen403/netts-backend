@@ -22,7 +22,6 @@ router.post("/register", async (req, res) => {
       pincode,
     } = req.body;
 
-    // Validate required fields
     if (
       !firstName ||
       !lastName ||
@@ -36,7 +35,6 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Proceed with checking if the email or phone exists
     let user = await prisma.user.findUnique({ where: { email } });
     if (user) {
       return res.status(400).json({ error: "Email already registered" });
@@ -47,7 +45,6 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Phone number already registered" });
     }
 
-    // Hash the password and create the new user
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await prisma.user.create({
       data: {

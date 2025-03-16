@@ -1,7 +1,5 @@
-// src/data/dummyProducer.js
 import { connectProducer, sendBatteryData } from "../kafka/producer.js";
 
-// Function to generate dummy battery data
 function generateDummyBatteryData() {
   return {
     batteryId: Math.floor(Math.random() * 1000),
@@ -12,7 +10,6 @@ function generateDummyBatteryData() {
   };
 }
 
-// Start the producer and send dummy data every 5 seconds
 async function startDummyProducer() {
   await connectProducer();
   setInterval(async () => {
