@@ -14,10 +14,12 @@ model User {
   lastName    String
   email       String       @unique
   password    String
+  refId       String       @unique
   phone       String       @unique
   state       String
   city        String
   pincode     String
+  coins       Int
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   preBookings PreBooking[] 

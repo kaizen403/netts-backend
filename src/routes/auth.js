@@ -9,6 +9,11 @@ dotenv.config();
 
 const router = express.Router();
 
+function generateRefId() {
+  const randomPart = Math.random().toString(36).substring(2, 9).toUpperCase();
+  return `NETTS${randomPart}`;
+}
+
 router.post("/register", async (req, res) => {
   try {
     const {
@@ -46,6 +51,8 @@ router.post("/register", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const refId = generateRefId();
+
     const newUser = await prisma.user.create({
       data: {
         firstName,
@@ -56,6 +63,8 @@ router.post("/register", async (req, res) => {
         state,
         city,
         pincode,
+        refId,
+        coins: 0,
       },
     });
 
