@@ -76,6 +76,8 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ error: "Registration failed" });
   }
 });
+
+// Local Login Endpoint
 router.post("/login", (req, res, next) => {
   passport.authenticate(
     "local-login",
@@ -96,6 +98,33 @@ router.post("/login", (req, res, next) => {
   )(req, res, next);
 });
 
+// Google OAuth Initiation
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+
+// Google OAuth Callback
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: "/login",
+  }),
+  (req, res) => {
+    // Successful authentication, generate token and respond.
+    const user = req.user;
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" },
+    );
+    // You can choose to redirect or send the token as JSON.
+    res.json({ message: "Google login successful", token, user });
+  },
+);
+
+// Session Endpoint (for checking current session)
 router.get(
   "/session",
   passport.authenticate("jwt", { session: false }),
